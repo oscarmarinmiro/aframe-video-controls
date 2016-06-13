@@ -8,7 +8,9 @@ if (typeof AFRAME === 'undefined') {
 AFRAME.registerComponent('video-controls', {
   dependencies: ['text'],
   schema: {
-    src: { type: 'string'}
+    src: { type: 'string'},
+    size: { type: 'int', default: 5 },
+    distance: { type: 'number', default:2.0 }
   },
 
   /**
@@ -17,6 +19,11 @@ AFRAME.registerComponent('video-controls', {
   init: function () {
 
     var self = this;
+
+//    this.el.setAttribute("position", "0 0 0");
+
+    this.el.setAttribute("rotation", "0 0 -90");
+
 
     this.video_selector = this.data.src;
 
@@ -27,9 +34,9 @@ AFRAME.registerComponent('video-controls', {
     this.video_el.pause();
 
     this.video_el.addEventListener("progress", function(pe) {
-        console.log("PROGRESS");
-        console.log(this);
-        console.log(pe);
+//        console.log("PROGRESS");
+//        console.log(this);
+//        console.log(pe);
 
     });
 
@@ -47,9 +54,6 @@ AFRAME.registerComponent('video-controls', {
     this.play_image = document.createElement("a-image");
 
     this.play_image.setAttribute("src", "#video-play-image");
-    this.play_image.setAttribute("height", "2.0");
-    this.play_image.setAttribute("width", "2.0");
-    this.play_image.setAttribute("position", "-10 0 0");
 
     this.bar_canvas = document.createElement("canvas");
     this.bar_canvas.setAttribute("id", "video_player_canvas");
@@ -59,18 +63,11 @@ AFRAME.registerComponent('video-controls', {
 
     this.context = this.bar_canvas.getContext('2d');
 
-    this.context.fillStyle = 'lightgray';
-    this.context.fillRect(0, 0, this.bar_canvas.width, this.bar_canvas.height);
-    this.context.fillStyle = 'red';
-    this.context.strokeStyle = 'white';
-
     this.texture = new THREE.Texture(this.bar_canvas);
 
     // On icon image, change video state and icon (play/pause)
 
     this.play_image.addEventListener('click', function () {
-
-        var point = document.querySelector("a-cursor").components.raycaster.raycaster.intersectObject(this.object3D, true)[0].point;
 
         if(!self.video_el.paused){
             this.setAttribute("src", "#video-play-image");
@@ -86,22 +83,50 @@ AFRAME.registerComponent('video-controls', {
         }
     });
 
+
     // Create info text with current video time and total duration
 
     this.info_text = document.createElement("a-entity");
-    this.info_text_format_string = "size:0.5; height:0.0";
+    this.info_text_format_string = "size:"+ (this.data.size)*0.050 +"; height:0.0";
     this.info_text.setAttribute("text", "text:00:00 / 00:00;" + this.info_text_format_string);
     this.info_text.setAttribute("material", "color:white");
-    this.info_text.setAttribute("position", "9.0 -0.15 0");
-
 
     // Create transport bar
 
     this.bar = document.createElement("a-plane");
     this.bar.setAttribute("color", "#000");
-    this.bar.setAttribute("height", 1);
-    this.bar.setAttribute("width", 17);
-    this.bar.setAttribute("position", "0.0 0.0 0");
+
+    // On transport bar, get point clicked, infer % of new pointer, and make video seek to that point
+
+    this.bar.addEventListener('click', function () {
+
+        var point = document.querySelector("a-cursor").components.raycaster.raycaster.intersectObject(this.object3D, true)[0].point;
+
+        console.log("POINT EN BARRA");
+
+        console.log(point);
+
+        console.log("BARRA");
+
+        console.log(this.object3D);
+
+        console.log(this.object3D.worldToLocal(point));
+
+        var x_offset = this.object3D.worldToLocal(point).x;
+
+        console.log("OFFSET");
+        console.log(x_offset);
+
+        var unit_offset = (x_offset/self.data.size)+0.5;
+
+        console.log("UNIT OFFSET");
+        console.log(unit_offset);
+
+        if(self.video_el.readyState > 0){
+            self.video_el.currentTime = unit_offset * self.video_el.duration;
+        }
+
+    });
 
     // Append image icon + info text + bar to component root
 
@@ -118,7 +143,41 @@ AFRAME.registerComponent('video-controls', {
    * Called when component is attached and when component data changes.
    * Generally modifies the entity based on the data.
    */
-  update: function (oldData) { },
+  update: function (oldData) {
+
+//      console.log("ATTACH STATE");
+//    console.log(this.el.attachedToParent);
+
+//    this.el.setAttribute("position", "0 0 -50");
+
+//    this.el.components.position.data.z = -this.data.distance;
+
+      // Sets position of the bar
+
+//    this.el.setAttribute("translate", "0 0 -50");
+//
+////    this.el.setAttribute("position", "0 0 -2");
+
+    // WHY CHANGING POSITION ATTRIBUTE DO NOT CHANGE REAL THREE.JS POSITION ON FIRST ITERATION?
+
+//    this.el.object3D.position = new THREE.Vector3(0,0, -1 * this.data.distance);
+
+    this.bar.setAttribute("height", this.data.size/10.0);
+    this.bar.setAttribute("width", this.data.size);
+    this.bar.setAttribute("position", "0.0 0.0 0.0");
+
+
+    this.info_text_format_string = "size:"+ (this.data.size)*0.050 +"; height:0.0";
+    this.info_text.setAttribute("position", ((this.data.size/2.0) * 1.10) + " " + -(this.data.size*0.025) +" 0");
+
+    this.play_image.setAttribute("height", this.data.size/10.0);
+    this.play_image.setAttribute("width", this.data.size/10.0);
+    this.play_image.setAttribute("position", ((-this.data.size/2.0) * 1.2) + " 0 0");
+
+
+
+
+  },
 
   /**
    * Called when a component is removed (e.g., via removeAttribute).
@@ -131,7 +190,13 @@ AFRAME.registerComponent('video-controls', {
    */
   tick: function (t) {
 
+//    this.el.setAttribute("position", "0 0 " + -this.data.distance);
 
+//    console.log("ATTACH STATE");
+//    console.log(this.el.attachedToParent);
+
+
+//      this.el.setAttribute("position", "0 0 -50");
     // Refresh every 100 millis
 
     if(typeof(this.last_time) === "undefined" || (t - this.last_time ) > 100) {
@@ -203,12 +268,14 @@ AFRAME.registerComponent('video-controls', {
 //                }
             }
 
+
+            // If material is not mapped yet to canvas texture and bar object3D is ready
+
             if(this.bar.object3D.children.length > 0) {
 
                 // If material is not mapped yet to canvas texture...
 
                 if(this.bar.object3D.children[0].material.map === null) {
-                    console.log("HIJO");
                     this.bar.object3D.children[0].material = new THREE.MeshBasicMaterial();
                     this.bar.object3D.children[0].material.map = this.texture;
                 }
