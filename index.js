@@ -9,8 +9,8 @@ AFRAME.registerComponent('video-controls', {
   dependencies: ['text'],
   schema: {
     src: { type: 'string'},
-    size: { type: 'int', default: 5 },
-    distance: { type: 'number', default:2.0 }
+    size: { type: 'int', default: 5},
+    distance: { type: 'number', default:2.0}
   },
 
   /**
@@ -19,11 +19,6 @@ AFRAME.registerComponent('video-controls', {
   init: function () {
 
     var self = this;
-
-//    this.el.setAttribute("position", "0 0 0");
-
-    this.el.setAttribute("rotation", "0 0 -90");
-
 
     this.video_selector = this.data.src;
 
@@ -145,26 +140,22 @@ AFRAME.registerComponent('video-controls', {
    */
   update: function (oldData) {
 
-//      console.log("ATTACH STATE");
-//    console.log(this.el.attachedToParent);
-
-//    this.el.setAttribute("position", "0 0 -50");
-
-//    this.el.components.position.data.z = -this.data.distance;
-
       // Sets position of the bar
 
 //    this.el.setAttribute("translate", "0 0 -50");
 //
-////    this.el.setAttribute("position", "0 0 -2");
+    this.el.setAttribute("position", "0 0 " + -this.data.distance);
+    this.el.object3D.position.x = 0;
+    this.el.object3D.position.y = 0;
+    this.el.object3D.position.z = -this.data.distance;
 
     // WHY CHANGING POSITION ATTRIBUTE DO NOT CHANGE REAL THREE.JS POSITION ON FIRST ITERATION?
 
-//    this.el.object3D.position = new THREE.Vector3(0,0, -1 * this.data.distance);
+    this.el.object3D.position = new THREE.Vector3(0,0, -1 * this.data.distance);
 
     this.bar.setAttribute("height", this.data.size/10.0);
     this.bar.setAttribute("width", this.data.size);
-    this.bar.setAttribute("position", "0.0 0.0 0.0");
+    this.bar.setAttribute("position", "0.0 0.0 0");
 
 
     this.info_text_format_string = "size:"+ (this.data.size)*0.050 +"; height:0.0";
@@ -189,12 +180,6 @@ AFRAME.registerComponent('video-controls', {
    * Called on each scene tick.
    */
   tick: function (t) {
-
-//    this.el.setAttribute("position", "0 0 " + -this.data.distance);
-
-//    console.log("ATTACH STATE");
-//    console.log(this.el.attachedToParent);
-
 
 //      this.el.setAttribute("position", "0 0 -50");
     // Refresh every 100 millis
