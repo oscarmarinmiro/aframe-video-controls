@@ -13,12 +13,41 @@ AFRAME.registerComponent('video-controls', {
     distance: { type: 'number', default:2.0}
   },
 
+  // Puts the control in from of the camera, at this.data.distance, facing it...
+
+  position_control_from_camera: function(){
+
+    var self = this;
+
+    document.querySelectorAll("a-camera").forEach(function(camera){
+        if(camera.getAttribute("camera").active){
+
+            // Position controls in front of the camera, at self.data.distance, but at horizon (y=0; place 'xz')
+
+            var cam_normal_x_z = camera.object3D.getWorldDirection().projectOnPlane(new THREE.Vector3(0, 1, 0)).setLength(self.data.distance);
+
+            // object position = cam position + cam direction projected on 'xz' and set at self.data.distance length
+            // note that cam_normal_x_z is subtracted from position, instead of being added, since cam 'normal'
+            // is looking *away* from the scene
+
+            self.el.object3D.position.copy (camera.object3D.getWorldPosition().sub(cam_normal_x_z));
+
+            // and now, make our controls rotate towards camera
+
+            self.el.object3D.lookAt(camera.object3D.getWorldPosition());
+
+        }
+    });
+
+  },
   /**
    * Called once when component is attached. Generally for initial setup.
    */
   init: function () {
 
     var self = this;
+
+    this.el.setAttribute("visible", true);
 
     this.video_selector = this.data.src;
 
@@ -27,13 +56,6 @@ AFRAME.registerComponent('video-controls', {
     // Stop video just in case at the beginning (This should be configurable in the component - TODO - )
 
     this.video_el.pause();
-
-    this.video_el.addEventListener("progress", function(pe) {
-//        console.log("PROGRESS");
-//        console.log(this);
-//        console.log(pe);
-
-    });
 
     // Change icon to 'play' on end
 
@@ -62,7 +84,7 @@ AFRAME.registerComponent('video-controls', {
 
     // On icon image, change video state and icon (play/pause)
 
-    this.play_image.addEventListener('click', function () {
+    this.play_image.addEventListener('click', function (event) {
 
         if(!self.video_el.paused){
             this.setAttribute("src", "#video-play-image");
@@ -76,6 +98,13 @@ AFRAME.registerComponent('video-controls', {
             self.video_el.play();
 
         }
+
+        // Prevent propagation upwards (e.g: canvas click)
+
+        event.stopPropagation();
+
+        event.preventDefault();
+
     });
 
 
@@ -93,33 +122,26 @@ AFRAME.registerComponent('video-controls', {
 
     // On transport bar, get point clicked, infer % of new pointer, and make video seek to that point
 
-    this.bar.addEventListener('click', function () {
+
+    this.bar.addEventListener('click', function (event) {
+
+        // Get raycast intersection point, and from there, x_offset in bar
 
         var point = document.querySelector("a-cursor").components.raycaster.raycaster.intersectObject(this.object3D, true)[0].point;
 
-        console.log("POINT EN BARRA");
-
-        console.log(point);
-
-        console.log("BARRA");
-
-        console.log(this.object3D);
-
-        console.log(this.object3D.worldToLocal(point));
-
         var x_offset = this.object3D.worldToLocal(point).x;
 
-        console.log("OFFSET");
-        console.log(x_offset);
-
         var unit_offset = (x_offset/self.data.size)+0.5;
-
-        console.log("UNIT OFFSET");
-        console.log(unit_offset);
 
         if(self.video_el.readyState > 0){
             self.video_el.currentTime = unit_offset * self.video_el.duration;
         }
+
+        // Prevent propagation upwards (e.g: canvas click)
+
+        event.stopPropagation();
+
+        event.preventDefault();
 
     });
 
@@ -131,6 +153,41 @@ AFRAME.registerComponent('video-controls', {
     this.el.appendChild(this.bar);
 
 
+    // Attach double click behavior outside player once scene is loaded
+
+    this.el.sceneEl.addEventListener("loaded", function(){
+
+        self.position_control_from_camera();
+
+        this.addEventListener("dblclick", function(){
+
+            var raycaster = document.querySelector("a-cursor").components.raycaster.raycaster;
+
+            // Double click is outside the player
+            // (note that for some reason you cannot prevent a dblclick on player from bubbling up (??)
+
+            if(raycaster.intersectObject(self.el.object3D, true).length == 0){
+
+                console.log("DOUBLE CLICK FUERA DEL CONTROL");
+
+                // If controls are show: hide
+
+
+                if(self.el.getAttribute("visible")) {
+                    self.el.setAttribute("visible", false);
+                }
+                // Else, show at 'distance' from camera
+                else {
+                    self.el.setAttribute("visible", true);
+
+                    self.position_control_from_camera();
+                }
+            }
+
+        });
+
+
+    });
 
   },
 
@@ -140,18 +197,7 @@ AFRAME.registerComponent('video-controls', {
    */
   update: function (oldData) {
 
-      // Sets position of the bar
-
-//    this.el.setAttribute("translate", "0 0 -50");
-//
-    this.el.setAttribute("position", "0 0 " + -this.data.distance);
-    this.el.object3D.position.x = 0;
-    this.el.object3D.position.y = 0;
-    this.el.object3D.position.z = -this.data.distance;
-
-    // WHY CHANGING POSITION ATTRIBUTE DO NOT CHANGE REAL THREE.JS POSITION ON FIRST ITERATION?
-
-    this.el.object3D.position = new THREE.Vector3(0,0, -1 * this.data.distance);
+    this.position_control_from_camera();
 
     this.bar.setAttribute("height", this.data.size/10.0);
     this.bar.setAttribute("width", this.data.size);
@@ -164,8 +210,6 @@ AFRAME.registerComponent('video-controls', {
     this.play_image.setAttribute("height", this.data.size/10.0);
     this.play_image.setAttribute("width", this.data.size/10.0);
     this.play_image.setAttribute("position", ((-this.data.size/2.0) * 1.2) + " 0 0");
-
-
 
 
   },
@@ -181,7 +225,6 @@ AFRAME.registerComponent('video-controls', {
    */
   tick: function (t) {
 
-//      this.el.setAttribute("position", "0 0 -50");
     // Refresh every 100 millis
 
     if(typeof(this.last_time) === "undefined" || (t - this.last_time ) > 100) {
@@ -213,13 +256,13 @@ AFRAME.registerComponent('video-controls', {
 
             var time_info_text = current_minutes + ":" + current_seconds + " / " + duration_minutes + ":" + duration_seconds;
 
-            this.info_text.setAttribute("text", "text: " + time_info_text + ";" + this.info_text_format_string);
+//            this.info_text.setAttribute("text", "text: " + time_info_text + ";" + this.info_text_format_string);
 
-            // Refresh transport bar canvas
+//            Refresh transport bar canvas
 
             var inc = this.bar_canvas.width / this.video_el.duration;
 
-            // display TimeRanges
+//            display TimeRanges
 
             if (this.video_el.buffered.length > 0) {
 
@@ -238,19 +281,19 @@ AFRAME.registerComponent('video-controls', {
                     this.bar_canvas.height);
 
 
-//                for (var i = 0; i < this.video_el.buffered.length; i++) {
-//
-//                    var startX = this.video_el.buffered.start(i) * inc;
-//                    var endX = this.video_el.buffered.end(i) * inc;
-//                    var width = endX - startX;
-//
-//                    ctx.fillStyle = "red";
-//                    ctx.fillRect(startX, 0, width, this.bar_canvas.height);
-//
-//
+////                for (var i = 0; i < this.video_el.buffered.length; i++) {
+////
+////                    var startX = this.video_el.buffered.start(i) * inc;
+////                    var endX = this.video_el.buffered.end(i) * inc;
+////                    var width = endX - startX;
+////
 ////                    ctx.fillStyle = "red";
-//
-//                }
+////                    ctx.fillRect(startX, 0, width, this.bar_canvas.height);
+////
+////
+//////                    ctx.fillStyle = "red";
+////
+////                }
             }
 
 
