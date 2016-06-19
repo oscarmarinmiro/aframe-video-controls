@@ -13,7 +13,7 @@
         <img id="video-pause-image" src="img/pause.png">
 
         <video id="video_1" src="https://ucarecdn.com/bcece0a8-86ce-460e-856b-40dac4875f15/"></video>
-        <!--<video id="video" src="video/city-4096-mp4-30fps-x264-ffmpeg.mp4"></video>-->
+        <!--<video id="video_1" src="video/city-4096-mp4-30fps-x264-ffmpeg.mp4"></video>-->
 
       </a-assets>
 
@@ -21,25 +21,9 @@
           <a-cursor id="cursor" color="yellow"></a-cursor>
       </a-camera>
 
-     <!--<a-entity camera>-->
-         <!--<a-entity cursor="fuse: true; maxDistance: 30; timeout: 500"-->
-                    <!--position="0 0 -5"-->
-                    <!--geometry="primitive: ring"-->
-                    <!--material="color: white; shader: flat">-->
-          <!--</a-entity>-->
-
-     <!--</a-entity>-->
-
       <a-videosphere src="#video_1" rotation="0 180 0"></a-videosphere>
 
-      <a-entity video-controls="src:#video_1;size:5;distance:10.0">
-
-          <!--<a-image src="#video-play-image" position="0 2.0 -2.0" height="2.0" width="2.0"></a-image>-->
-
-      </a-entity>
-
-      <!--<a-curvedimage src="#video-play-image" height="3.0" radius="5.7" theta-length="10"-->
-                 <!--position="0 2.0 -2.0" rotation="0 0 0" scale="0.8 0.8 0.8"></a-curvedimage>-->
+      <a-entity video-controls="src:#video_1;size:5;distance:10.0"></a-entity>
 
     </a-scene>
   </body>
