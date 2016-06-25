@@ -42,6 +42,6 @@
     "randomcolor": "^0.4.4",
     "shelljs": "^0.7.0",
     "shx": "^0.1.1",
-    "webpack": "^1.13.0",
+    "webpack": "^1.13.0"
   }
 }

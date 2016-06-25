@@ -9,8 +9,20 @@ if (typeof AFRAME === 'undefined') {
 AFRAME.registerComponent('video-controls', {
   schema: {
     src: { type: 'string'},
-    size: { type: 'int', default: 5},
+    size: { type: 'number', default: 1.0},
     distance: { type: 'number', default:2.0}
+  },
+
+  position_time_from_steps: function(){
+
+        var unit_offset = this.current_step/this.bar_steps;
+
+        if(this.video_el.readyState > 0) {
+
+            this.video_el.currentTime = unit_offset * this.video_el.duration;
+        }
+
+
   },
 
   // Puts the control in from of the camera, at this.data.distance, facing it...
@@ -51,6 +63,12 @@ AFRAME.registerComponent('video-controls', {
   init: function () {
 
     var self = this;
+
+    // Next two vars used to control transport bar with keyboard arrows
+
+    this.bar_steps = 10.0;
+
+    this.current_step = 0.0;
 
     this.el.setAttribute("visible", true);
 
@@ -113,6 +131,43 @@ AFRAME.registerComponent('video-controls', {
     });
 
 
+    window.addEventListener('keyup', function(event) {
+      switch (event.keyCode) {
+
+        // If space bar is pressed, fire click on play_image
+        case 32:
+          self.play_image.dispatchEvent(new Event('click'));
+        break;
+
+        // Arrow left: beginning
+        case 37:
+           self.current_step = 0.0;
+           self.position_time_from_steps();
+        break;
+
+        // Arrow right: end
+        case 39:
+           self.current_step = self.bar_steps;
+           self.position_time_from_steps();
+
+        break;
+
+        // Arrow up: one step forward
+        case 38:
+           self.current_step = self.current_step < (self.bar_steps) ? self.current_step + 1 : self.current_step;
+           self.position_time_from_steps();
+        break;
+
+        // Arrow down: one step back
+        case 40:
+           self.current_step = self.current_step > 0 ? self.current_step - 1 : self.current_step;
+           self.position_time_from_steps();
+        break;
+
+      }
+    }, false);
+
+
     // Create transport bar
 
     this.bar = document.createElement("a-plane");
@@ -129,6 +184,10 @@ AFRAME.registerComponent('video-controls', {
         var x_offset = this.object3D.worldToLocal(point).x;
 
         var unit_offset = (x_offset/self.data.size)+0.5;
+
+        // Update current step for coherence between point+click and key methods
+
+        self.current_step = Math.round(unit_offset*self.bar_steps);
 
         if(self.video_el.readyState > 0) {
 
@@ -256,6 +315,10 @@ AFRAME.registerComponent('video-controls', {
 
             if (this.video_el.buffered.length > 0) {
 
+                // Synchronize current step with currentTime
+
+                this.current_step = Math.round((this.video_el.currentTime/this.video_el.duration)*this.bar_steps);
+
                 var ctx = this.context;
                 ctx.fillStyle = "black";
                 ctx.fillRect(0, 0, this.bar_canvas.width, this.bar_canvas.height);
@@ -284,32 +347,33 @@ AFRAME.registerComponent('video-controls', {
                 // If seeking to position, show
 
                 if(this.video_el.seeking){
-                    ctx.font = "40px Helvetica Neue";
+                    ctx.font = "30px Helvetica Neue";
                     ctx.fillStyle = "yellow";
                     ctx.textAlign = "end";
-                    ctx.fillText("Seeking", this.bar_canvas.width*0.95, this.bar_canvas.height* 0.63);
+                    ctx.fillText("Seeking", this.bar_canvas.width * 0.95, this.bar_canvas.height * 0.60);
                 }
 
-                // Uncomment to see % of video loaded...
+                // Uncomment below to see % of video loaded...
 
-//                else {
-//
-//                    var percent = (this.video_el.buffered.end(this.video_el.buffered.length - 1) / this.video_el.duration) * 100;
-//
-//                    ctx.font = "40px Helvetica Neue";
-//                    ctx.fillStyle = "yellow";
-//                    ctx.textAlign = "end";
-//
-//                    ctx.fillText(percent.toFixed(0) + "%", this.bar_canvas.width * 0.95, this.bar_canvas.height * 0.63);
-//                }
+                else {
+
+                    var percent = (this.video_el.buffered.end(this.video_el.buffered.length - 1) / this.video_el.duration) * 100;
+
+                    ctx.font = "30px Helvetica Neue";
+                    ctx.fillStyle = "yellow";
+                    ctx.textAlign = "end";
+
+                    ctx.fillText(percent.toFixed(0) + "% loaded", this.bar_canvas.width * 0.95, this.bar_canvas.height * 0.60);
+                }
 
 
                 // Info text
 
                 ctx.fillStyle = "yellow";
-                ctx.font = "40px Helvetica Neue";
+                ctx.font = "35px Helvetica Neue";
                 ctx.textAlign = "center";
-                ctx.fillText("Double-click outside player to hide or show it", this.bar_canvas.width/2, this.bar_canvas.height* 0.9);
+                ctx.fillText("Look+click on play or bar. Space bar and arrows also work.", this.bar_canvas.width/2, this.bar_canvas.height* 0.8);
+                ctx.fillText("Double-click outside player to hide or show it", this.bar_canvas.width/2, this.bar_canvas.height* 0.95);
 
                 // Show buffered ranges 'bins'
 
