@@ -8,7 +8,15 @@ You can also press the 'space bar' or the arrow keys to control the video if you
 
 !["The component in action"](/img/video-component.png?raw=true "The component in action")
 
-#### Feedback is needed and very wellcome, specially regarding User Experience!!!
+#### Feedback is needed and very welcome, specially regarding User Experience!!!
+
+I'm working on the following features, but feel free to suggest via Github Issues:
+
+- 'Flat' component if on Desktop (i.e: not in the 3D space)
+- Test on iPhone and Vive (at the moment I tested this in Android, Cardboard and Oculus Rift DK2)
+- Test on much bigger files
+- Volume controls
+- Another control to jump between different files so you can 'browse' different videos
 
 ### Demo
 
