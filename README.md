@@ -19,8 +19,8 @@ You can also press the 'space bar' or the arrow keys to control the video if you
 
 ### Usage
 
-Just include the component and put your video into the A-frame assets section. *Keep in mind that you must include two images into the assets,
-with the exact 'ids' displayed below, that will be used as the play/pause icons. You can find these images in the examples*
+Just include the component and put your video into the A-frame assets section. **Keep in mind that you must include two images into the assets,
+with the exact 'ids' displayed below, that will be used as the play/pause icons (so you must also include the files in your project). You can find these images in the examples**
 
 Then just include an entity with the 'src' attribute 'pointing' to the video asset you want to control.
 
