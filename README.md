@@ -8,6 +8,10 @@ You can also press the 'space bar' or the arrow keys to control the video if you
 
 !["The component in action"](/img/video-component.png?raw=true "The component in action")
 
+### Demo
+
+You can play with a live demo [here] (https://oscarmarinmiro.github.io/aframe-video-controls)
+
 
 ### Properties
 
