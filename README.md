@@ -35,10 +35,11 @@ Install and use by directly including the [browser files](dist):
 This example projects a 360 video into a videosphere and attaches the controls to it.
 
 ```html
+
 <head>
   <title>My A-Frame Scene</title>
   <script src="https://aframe.io/releases/0.2.0/aframe.min.js"></script>
-  <script src="https://rawgit.com/ngokevin/oscarmarinmiro/master/dist/aframe-video-controls.min.js"></script>
+  <script src="https://rawgit.com/oscarmarinmiro/aframe-video-controls/master/dist/aframe-video-controls.min.js"></script>
 </head>
 
  <body>
