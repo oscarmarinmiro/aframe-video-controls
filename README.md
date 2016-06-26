@@ -24,7 +24,7 @@ You can play with a live demo [here] (https://oscarmarinmiro.github.io/aframe-vi
 ### Usage
 
 Just include the component and put your video into the A-frame assets section. **Keep in mind that you must include two images into the assets,
-with the exact 'ids' displayed below, that will be used as the play/pause icons (so you must also include the files in your project). You can find these images in the examples**
+with the exact 'ids' displayed below, that will be used as the play/pause icons (so you must also include the files in your project). You can find these images in the examples or supply your own**
 
 Then just include an entity with the 'src' attribute 'pointing' to the video asset you want to control.
 
