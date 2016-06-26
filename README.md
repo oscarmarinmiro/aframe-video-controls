@@ -17,6 +17,7 @@ I'm working on the following features, but feel free to suggest via Github Issue
 - Test on much bigger files
 - Volume controls
 - Another control to jump between different files so you can 'browse' different videos
+- 'Auto hide feature': If x seconds have passed after last interaction with player, hide the controls and A-Frame cursor
 
 ### Demo
 
