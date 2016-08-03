@@ -87,9 +87,14 @@ AFRAME.registerComponent('video-controls', {
 
     this.video_el = document.querySelector(this.video_selector);
 
-    // Stop video just in case at the beginning (This should be configurable in the component - TODO - )
+    // Create icon image (play/pause), different image whether video is playing.
 
-    this.video_el.pause();
+    this.play_image = document.createElement("a-image");
+    if (this.video_el.paused) {
+      this.play_image.setAttribute("src", "#video-play-image");
+    } else {
+      this.play_image.setAttribute("src", "#video-pause-image");
+    }
 
     // Change icon to 'play' on end
 
@@ -99,12 +104,21 @@ AFRAME.registerComponent('video-controls', {
 
     });
 
+    // Change icon to 'pause' on start.
 
-    // Create icon image (play/pause)
+    this.video_el.addEventListener("pause", function(){
 
-    this.play_image = document.createElement("a-image");
+        self.play_image.setAttribute("src", "#video-play-image");
 
-    this.play_image.setAttribute("src", "#video-play-image");
+    });
+
+    // Change icon to 'play' on pause.
+
+    this.video_el.addEventListener("playing", function(){
+
+        self.play_image.setAttribute("src", "#video-pause-image");
+
+    });
 
     this.bar_canvas = document.createElement("canvas");
     this.bar_canvas.setAttribute("id", "video_player_canvas");
