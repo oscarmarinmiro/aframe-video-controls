@@ -2,6 +2,9 @@ if (typeof AFRAME === 'undefined') {
   throw new Error('Component attempted to register before AFRAME was available.');
 }
 
+var DEFAULT_INFO_TEXT_BOTTOM = 'Double-click outside player to hide or show it.';
+var DEFAULT_INFO_TEXT_TOP = 'Look+click on play or bar. Space bar and arrows also work.';
+
 /**
  ** Video control component for A-Frame.
  */
@@ -10,7 +13,15 @@ AFRAME.registerComponent('video-controls', {
   schema: {
     src: { type: 'string'},
     size: { type: 'number', default: 1.0},
-    distance: { type: 'number', default:2.0}
+    distance: { type: 'number', default:2.0},
+    backgroundColor: { default: 'black'},
+    barColor: { default: 'red'},
+    textColor: { default: 'yellow'},
+    infoTextBottom: { default: DEFAULT_INFO_TEXT_BOTTOM},
+    infoTextTop: { default: DEFAULT_INFO_TEXT_TOP},
+    infoTextFont: { default: '35px Helvetica Neue'},
+    statusTextFont: { default: '30px Helvetica Neue'},
+    timeTextFont: { default: '70px Helvetica Neue'}
   },
 
   position_time_from_steps: function(){
@@ -320,7 +331,7 @@ AFRAME.registerComponent('video-controls', {
                 this.current_step = Math.round((this.video_el.currentTime/this.video_el.duration)*this.bar_steps);
 
                 var ctx = this.context;
-                ctx.fillStyle = "black";
+                ctx.fillStyle = this.data.backgroundColor;
                 ctx.fillRect(0, 0, this.bar_canvas.width, this.bar_canvas.height);
 
                 // Uncomment to draw a single bar for loaded data instead of 'bins'
@@ -335,7 +346,7 @@ AFRAME.registerComponent('video-controls', {
 
                 // Display time info text
 
-                ctx.font = "70px Helvetica Neue";
+                ctx.font = this.data.timeTextFont;
                 ctx.fillStyle = "white";
                 ctx.textAlign = "center";
                 ctx.fillText(time_info_text, this.bar_canvas.width/2, this.bar_canvas.height* 0.65);
@@ -347,8 +358,8 @@ AFRAME.registerComponent('video-controls', {
                 // If seeking to position, show
 
                 if(this.video_el.seeking){
-                    ctx.font = "30px Helvetica Neue";
-                    ctx.fillStyle = "yellow";
+                    ctx.font = this.data.statusTextFont;
+                    ctx.fillStyle = this.data.textColor;
                     ctx.textAlign = "end";
                     ctx.fillText("Seeking", this.bar_canvas.width * 0.95, this.bar_canvas.height * 0.60);
                 }
@@ -359,8 +370,8 @@ AFRAME.registerComponent('video-controls', {
 
                     var percent = (this.video_el.buffered.end(this.video_el.buffered.length - 1) / this.video_el.duration) * 100;
 
-                    ctx.font = "30px Helvetica Neue";
-                    ctx.fillStyle = "yellow";
+                    ctx.font = this.data.statusTextFont;
+                    ctx.fillStyle = this.data.textColor;
                     ctx.textAlign = "end";
 
                     ctx.fillText(percent.toFixed(0) + "% loaded", this.bar_canvas.width * 0.95, this.bar_canvas.height * 0.60);
@@ -369,11 +380,11 @@ AFRAME.registerComponent('video-controls', {
 
                 // Info text
 
-                ctx.fillStyle = "yellow";
-                ctx.font = "35px Helvetica Neue";
+                ctx.fillStyle = this.data.textColor;
+                ctx.font = this.data.infoTextFont;
                 ctx.textAlign = "center";
-                ctx.fillText("Look+click on play or bar. Space bar and arrows also work.", this.bar_canvas.width/2, this.bar_canvas.height* 0.8);
-                ctx.fillText("Double-click outside player to hide or show it", this.bar_canvas.width/2, this.bar_canvas.height* 0.95);
+                ctx.fillText(this.data.infoTextTop, this.bar_canvas.width/2, this.bar_canvas.height* 0.8);
+                ctx.fillText(this.data.infoTextBottom, this.bar_canvas.width/2, this.bar_canvas.height* 0.95);
 
                 // Show buffered ranges 'bins'
 
@@ -390,7 +401,7 @@ AFRAME.registerComponent('video-controls', {
 
                 // Red bar with already played range
 
-                ctx.fillStyle = "red";
+                ctx.fillStyle = this.data.barColor;
                 ctx.fillRect(0, 0,
                     (this.video_el.currentTime / this.video_el.duration)*this.bar_canvas.width,
                     this.bar_canvas.height/3);

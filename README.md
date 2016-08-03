@@ -26,11 +26,19 @@ You can play with a live demo [here] (https://oscarmarinmiro.github.io/aframe-vi
 
 ### Properties
 
-| Property | Description | Default Value |
-| -------- | ----------- | ------------- |
-| src         | selector of the video asset              | mandatory               |
-| size         | horizontal size of the player in meters              | 1.0              |
-| distance        | distance of the player from the camera in meters              | 2.0             |
+| Property | Description                                      | Default Value |
+| -------- | -----------                                      | ------------- |
+| src      | selector of the video asset                      | mandatory     |
+| size     | horizontal size of the player in meters          | 1.0           |
+| distance | distance of the player from the camera in meters | 2.0           |
+| backgroundColor | Color of the player background. | black           |
+| barColor | Color of the video progress bar. | red |
+| textColor | Color of the text. | yellow |
+| infoTextBottom | Bottom text to display under the bar to explain how to use it. | Double-click outside player... |
+| infoTextTop | Top text to display under the bar to explain how to use it. | Look+click on play... |
+| infoTextFont | Font for info text. | 35px Helevtica Neue |
+| statusTextFont | Font for text to right of player. | 30px Helevtica Neue |
+| timeTextFont | Font for time progress. | 70px Helevtica Neue |
 
 ### Usage
 
