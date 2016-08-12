@@ -133,14 +133,11 @@
 
 	    this.video_el = document.querySelector(this.video_selector);
 
-	    // play_image sources
+	    // image sources for play/pause
 
-	    self.play_image_src = "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
-	    self.pause_image_src = "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
+	    self.play_image_src = document.getElementById("video-play-image") ? "#video-play-image" : "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
+	    self.pause_image_src = document.getElementById("video-pause-image") ? "#video-pause-image" :"http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
 
-	    console.log("INIT");
-	    console.log(document.querySelectorAll("img").querySelector("#video-play-image"));
-	      
 	    // Create icon image (play/pause), different image whether video is playing.
 
 	    this.play_image = document.createElement("a-image");
