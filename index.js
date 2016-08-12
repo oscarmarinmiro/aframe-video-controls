@@ -89,8 +89,8 @@ AFRAME.registerComponent('video-controls', {
 
     // image sources for play/pause
 
-    self.play_image_src = document.getElementById("video-play-image") ? "#video-play-image" : "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
-    self.pause_image_src = document.getElementById("video-pause-image") ? "#video-pause-image" :"http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
+    self.play_image_src = document.getElementById("video-play-image") ? "#video-play-image" : "https://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
+    self.pause_image_src = document.getElementById("video-pause-image") ? "#video-pause-image" :"https://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
 
     // Create icon image (play/pause), different image whether video is playing.
 
