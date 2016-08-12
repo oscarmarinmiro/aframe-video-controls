@@ -48,6 +48,9 @@
 	  throw new Error('Component attempted to register before AFRAME was available.');
 	}
 
+	var DEFAULT_INFO_TEXT_BOTTOM = 'Double-click outside player to hide or show it.';
+	var DEFAULT_INFO_TEXT_TOP = 'Look+click on play or bar. Space bar and arrows also work.';
+
 	/**
 	 ** Video control component for A-Frame.
 	 */
@@ -56,7 +59,15 @@
 	  schema: {
 	    src: { type: 'string'},
 	    size: { type: 'number', default: 1.0},
-	    distance: { type: 'number', default:2.0}
+	    distance: { type: 'number', default:2.0},
+	    backgroundColor: { default: 'black'},
+	    barColor: { default: 'red'},
+	    textColor: { default: 'yellow'},
+	    infoTextBottom: { default: DEFAULT_INFO_TEXT_BOTTOM},
+	    infoTextTop: { default: DEFAULT_INFO_TEXT_TOP},
+	    infoTextFont: { default: '35px Helvetica Neue'},
+	    statusTextFont: { default: '30px Helvetica Neue'},
+	    timeTextFont: { default: '70px Helvetica Neue'}
 	  },
 
 	  position_time_from_steps: function(){
@@ -122,24 +133,47 @@
 
 	    this.video_el = document.querySelector(this.video_selector);
 
-	    // Stop video just in case at the beginning (This should be configurable in the component - TODO - )
+	    // play_image sources
 
-	    this.video_el.pause();
+	    self.play_image_src = "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
+	    self.pause_image_src = "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
+
+	    console.log("INIT");
+	    console.log(document.querySelectorAll("img").querySelector("#video-play-image"));
+	      
+	    // Create icon image (play/pause), different image whether video is playing.
+
+	    this.play_image = document.createElement("a-image");
+
+	    if (this.video_el.paused) {
+	      this.play_image.setAttribute("src", self.play_image_src);
+	    } else {
+	      this.play_image.setAttribute("src", self.pause_image_src);
+	    }
 
 	    // Change icon to 'play' on end
 
 	    this.video_el.addEventListener("ended", function(){
 
-	        self.play_image.setAttribute("src", "#video-play-image");
+	        self.play_image.setAttribute("src", self.play_image_src);
 
 	    });
 
+	    // Change icon to 'pause' on start.
 
-	    // Create icon image (play/pause)
+	    this.video_el.addEventListener("pause", function(){
 
-	    this.play_image = document.createElement("a-image");
+	        self.play_image.setAttribute("src", self.play_image_src);
 
-	    this.play_image.setAttribute("src", "#video-play-image");
+	    });
+
+	    // Change icon to 'play' on pause.
+
+	    this.video_el.addEventListener("playing", function(){
+
+	        self.play_image.setAttribute("src", self.pause_image_src);
+
+	    });
 
 	    this.bar_canvas = document.createElement("canvas");
 	    this.bar_canvas.setAttribute("id", "video_player_canvas");
@@ -156,13 +190,13 @@
 	    this.play_image.addEventListener('click', function (event) {
 
 	        if(!self.video_el.paused){
-	            this.setAttribute("src", "#video-play-image");
+	            this.setAttribute("src", self.play_image_src);
 
 	            self.video_el.pause();
 
 	        }
 	        else {
-	            this.setAttribute("src", "#video-pause-image");
+	            this.setAttribute("src", self.pause_image_src);
 
 	            self.video_el.play();
 
@@ -366,7 +400,7 @@
 	                this.current_step = Math.round((this.video_el.currentTime/this.video_el.duration)*this.bar_steps);
 
 	                var ctx = this.context;
-	                ctx.fillStyle = "black";
+	                ctx.fillStyle = this.data.backgroundColor;
 	                ctx.fillRect(0, 0, this.bar_canvas.width, this.bar_canvas.height);
 
 	                // Uncomment to draw a single bar for loaded data instead of 'bins'
@@ -381,7 +415,7 @@
 
 	                // Display time info text
 
-	                ctx.font = "70px Helvetica Neue";
+	                ctx.font = this.data.timeTextFont;
 	                ctx.fillStyle = "white";
 	                ctx.textAlign = "center";
 	                ctx.fillText(time_info_text, this.bar_canvas.width/2, this.bar_canvas.height* 0.65);
@@ -393,8 +427,8 @@
 	                // If seeking to position, show
 
 	                if(this.video_el.seeking){
-	                    ctx.font = "30px Helvetica Neue";
-	                    ctx.fillStyle = "yellow";
+	                    ctx.font = this.data.statusTextFont;
+	                    ctx.fillStyle = this.data.textColor;
 	                    ctx.textAlign = "end";
 	                    ctx.fillText("Seeking", this.bar_canvas.width * 0.95, this.bar_canvas.height * 0.60);
 	                }
@@ -405,8 +439,8 @@
 
 	                    var percent = (this.video_el.buffered.end(this.video_el.buffered.length - 1) / this.video_el.duration) * 100;
 
-	                    ctx.font = "30px Helvetica Neue";
-	                    ctx.fillStyle = "yellow";
+	                    ctx.font = this.data.statusTextFont;
+	                    ctx.fillStyle = this.data.textColor;
 	                    ctx.textAlign = "end";
 
 	                    ctx.fillText(percent.toFixed(0) + "% loaded", this.bar_canvas.width * 0.95, this.bar_canvas.height * 0.60);
@@ -415,11 +449,11 @@
 
 	                // Info text
 
-	                ctx.fillStyle = "yellow";
-	                ctx.font = "35px Helvetica Neue";
+	                ctx.fillStyle = this.data.textColor;
+	                ctx.font = this.data.infoTextFont;
 	                ctx.textAlign = "center";
-	                ctx.fillText("Look+click on play or bar. Space bar and arrows also work.", this.bar_canvas.width/2, this.bar_canvas.height* 0.8);
-	                ctx.fillText("Double-click outside player to hide or show it", this.bar_canvas.width/2, this.bar_canvas.height* 0.95);
+	                ctx.fillText(this.data.infoTextTop, this.bar_canvas.width/2, this.bar_canvas.height* 0.8);
+	                ctx.fillText(this.data.infoTextBottom, this.bar_canvas.width/2, this.bar_canvas.height* 0.95);
 
 	                // Show buffered ranges 'bins'
 
@@ -436,7 +470,7 @@
 
 	                // Red bar with already played range
 
-	                ctx.fillStyle = "red";
+	                ctx.fillStyle = this.data.barColor;
 	                ctx.fillRect(0, 0,
 	                    (this.video_el.currentTime / this.video_el.duration)*this.bar_canvas.width,
 	                    this.bar_canvas.height/3);

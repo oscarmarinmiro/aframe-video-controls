@@ -87,20 +87,26 @@ AFRAME.registerComponent('video-controls', {
 
     this.video_el = document.querySelector(this.video_selector);
 
+    // image sources for play/pause
+
+    self.play_image_src = document.getElementById("video-play-image") ? "#video-play-image" : "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
+    self.pause_image_src = document.getElementById("video-pause-image") ? "#video-pause-image" :"http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
+
     // Create icon image (play/pause), different image whether video is playing.
 
     this.play_image = document.createElement("a-image");
+
     if (this.video_el.paused) {
-      this.play_image.setAttribute("src", "#video-play-image");
+      this.play_image.setAttribute("src", self.play_image_src);
     } else {
-      this.play_image.setAttribute("src", "#video-pause-image");
+      this.play_image.setAttribute("src", self.pause_image_src);
     }
 
     // Change icon to 'play' on end
 
     this.video_el.addEventListener("ended", function(){
 
-        self.play_image.setAttribute("src", "#video-play-image");
+        self.play_image.setAttribute("src", self.play_image_src);
 
     });
 
@@ -108,7 +114,7 @@ AFRAME.registerComponent('video-controls', {
 
     this.video_el.addEventListener("pause", function(){
 
-        self.play_image.setAttribute("src", "#video-play-image");
+        self.play_image.setAttribute("src", self.play_image_src);
 
     });
 
@@ -116,7 +122,7 @@ AFRAME.registerComponent('video-controls', {
 
     this.video_el.addEventListener("playing", function(){
 
-        self.play_image.setAttribute("src", "#video-pause-image");
+        self.play_image.setAttribute("src", self.pause_image_src);
 
     });
 
@@ -135,13 +141,13 @@ AFRAME.registerComponent('video-controls', {
     this.play_image.addEventListener('click', function (event) {
 
         if(!self.video_el.paused){
-            this.setAttribute("src", "#video-play-image");
+            this.setAttribute("src", self.play_image_src);
 
             self.video_el.pause();
 
         }
         else {
-            this.setAttribute("src", "#video-pause-image");
+            this.setAttribute("src", self.pause_image_src);
 
             self.video_el.play();
 

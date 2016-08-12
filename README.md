@@ -1,6 +1,6 @@
 ## aframe-video-controls
 
-A video control component for [A-Frame](https://aframe.io).
+A video control component for [A-Frame](https://aframe.io). Demo [here] (https://oscarmarinmiro.github.io/aframe-video-controls)
 
 It attaches to a video asset so you can play/pause the video (assuing it is projected on a plane or sphere) by looking and clicking on the 'play' icon or transport bar.
 
@@ -36,16 +36,27 @@ You can play with a live demo [here] (https://oscarmarinmiro.github.io/aframe-vi
 | textColor | Color of the text. | yellow |
 | infoTextBottom | Bottom text to display under the bar to explain how to use it. | Double-click outside player... |
 | infoTextTop | Top text to display under the bar to explain how to use it. | Look+click on play... |
-| infoTextFont | Font for info text. | 35px Helevtica Neue |
-| statusTextFont | Font for text to right of player. | 30px Helevtica Neue |
-| timeTextFont | Font for time progress. | 70px Helevtica Neue |
+| infoTextFont | Font for info text. | 35px Helvetica Neue |
+| statusTextFont | Font for text to right of player. | 30px Helvetica Neue |
+| timeTextFont | Font for time progress. | 70px Helvetica Neue |
 
 ### Usage
 
-Just include the component and put your video into the A-frame assets section. **Keep in mind that you must include two images into the assets,
-with the exact 'ids' displayed below, that will be used as the play/pause icons (so you must also include the files in your project). You can find these images in the examples or supply your own**
+Just include the component and put your video into the A-frame assets section.
 
 Then just include an entity with the 'src' attribute 'pointing' to the video asset you want to control.
+
+You can supply your own 'play' and 'pause' images for the player by including these lines into the assets of your scene:
+
+```html
+    <a-assets>
+        <img id="video-play-image" src="img/play.png">
+        <img id="video-pause-image" src="img/pause.png">
+     ...
+```
+
+Otherwise, the default 'play' and 'pause' images (CDN-hosted) will be used.
+
 
 #### Browser Installation
 
@@ -64,9 +75,6 @@ This example projects a 360 video into a videosphere and attaches the controls t
  <body>
     <a-scene>
       <a-assets>
-        <img id="video-play-image" src="img/play.png">
-        <img id="video-pause-image" src="img/pause.png">
-
         <video id="video_1" src="https://ucarecdn.com/bcece0a8-86ce-460e-856b-40dac4875f15/"></video>
       </a-assets>
 
