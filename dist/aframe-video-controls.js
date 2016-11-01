@@ -98,7 +98,9 @@
 
 	        // Set position of menu based on camera yaw and data.pitch
 
-	        self.y_position = 0;
+	        // Have to add 1.6m to camera.position.y (????)
+
+	        self.y_position = camera.position.y + 1.6;
 	        self.x_position = -self.data.distance * Math.sin(camera_yaw * Math.PI / 180.0);
 	        self.z_position = -self.data.distance * Math.cos(camera_yaw * Math.PI / 180.0);
 
@@ -106,7 +108,7 @@
 
 	        // and now, make our controls rotate towards origin
 
-	        this.el.object3D.lookAt(new THREE.Vector3(0, 0, 0));
+	        this.el.object3D.lookAt(new THREE.Vector3(camera.position.x, camera.position.y + 1.6, camera.position.z));
 
 	    }
 
