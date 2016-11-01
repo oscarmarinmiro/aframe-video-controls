@@ -1,6 +1,6 @@
 {
   "name": "aframe-video-controls",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Video Controls for video assets",
   "main": "index.js",
   "browser": "dist/aframe-video-controls.min.js",
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/oscarmarinmiro/aframe-video-controls#readme",
   "devDependencies": {
-    "aframe": "^0.2.0",
+    "aframe": "^0.3.0",
     "browserify": "^13.0.0",
     "browserify-css": "^0.9.1",
     "budo": "^8.2.2",

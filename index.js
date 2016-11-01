@@ -42,29 +42,28 @@ AFRAME.registerComponent('video-controls', {
 
     var self = this;
 
-    var cameras = document.querySelectorAll("a-camera");
+    var camera = self.el.sceneEl.camera;
 
-    for(var i=0; i<cameras.length; i++) {
+    if(camera) {
 
-        var camera = cameras[i];
+        var camera_rotation = camera.el.getAttribute("rotation");
 
-        if (camera.getAttribute("camera").active) {
+        var camera_yaw = camera_rotation.y;
 
-            // Position controls in front of the camera, at self.data.distance, but at horizon (y=0; place 'xz')
+        // Set position of menu based on camera yaw and data.pitch
 
-            var cam_normal_x_z = camera.object3D.getWorldDirection().projectOnPlane(new THREE.Vector3(0, 1, 0)).setLength(self.data.distance);
+        // Have to add 1.6m to camera.position.y (????)
 
-            // object position = cam position + cam direction projected on 'xz' and set at self.data.distance length
-            // note that cam_normal_x_z is subtracted from position, instead of being added, since cam 'normal'
-            // is looking *away* from the scene
+        self.y_position = camera.position.y + 1.6;
+        self.x_position = -self.data.distance * Math.sin(camera_yaw * Math.PI / 180.0);
+        self.z_position = -self.data.distance * Math.cos(camera_yaw * Math.PI / 180.0);
 
-            self.el.object3D.position.copy(camera.object3D.getWorldPosition().sub(cam_normal_x_z));
+        self.el.setAttribute("position", [self.x_position, self.y_position, self.z_position].join(" "));
 
-            // and now, make our controls rotate towards camera
+        // and now, make our controls rotate towards origin
 
-            self.el.object3D.lookAt(camera.object3D.getWorldPosition());
+        this.el.object3D.lookAt(new THREE.Vector3(camera.position.x, camera.position.y + 1.6, camera.position.z));
 
-        }
     }
 
   },

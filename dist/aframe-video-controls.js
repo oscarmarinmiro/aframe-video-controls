@@ -88,29 +88,26 @@
 
 	    var self = this;
 
-	    var cameras = document.querySelectorAll("a-camera");
+	    var camera = self.el.sceneEl.camera;
 
-	    for(var i=0; i<cameras.length; i++) {
+	    if(camera) {
 
-	        var camera = cameras[i];
+	        var camera_rotation = camera.el.getAttribute("rotation");
 
-	        if (camera.getAttribute("camera").active) {
+	        var camera_yaw = camera_rotation.y;
 
-	            // Position controls in front of the camera, at self.data.distance, but at horizon (y=0; place 'xz')
+	        // Set position of menu based on camera yaw and data.pitch
 
-	            var cam_normal_x_z = camera.object3D.getWorldDirection().projectOnPlane(new THREE.Vector3(0, 1, 0)).setLength(self.data.distance);
+	        self.y_position = 0;
+	        self.x_position = -self.data.distance * Math.sin(camera_yaw * Math.PI / 180.0);
+	        self.z_position = -self.data.distance * Math.cos(camera_yaw * Math.PI / 180.0);
 
-	            // object position = cam position + cam direction projected on 'xz' and set at self.data.distance length
-	            // note that cam_normal_x_z is subtracted from position, instead of being added, since cam 'normal'
-	            // is looking *away* from the scene
+	        self.el.setAttribute("position", [self.x_position, self.y_position, self.z_position].join(" "));
 
-	            self.el.object3D.position.copy(camera.object3D.getWorldPosition().sub(cam_normal_x_z));
+	        // and now, make our controls rotate towards origin
 
-	            // and now, make our controls rotate towards camera
+	        this.el.object3D.lookAt(new THREE.Vector3(0, 0, 0));
 
-	            self.el.object3D.lookAt(camera.object3D.getWorldPosition());
-
-	        }
 	    }
 
 	  },
@@ -135,8 +132,8 @@
 
 	    // image sources for play/pause
 
-	    self.play_image_src = document.getElementById("video-play-image") ? "#video-play-image" : "http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
-	    self.pause_image_src = document.getElementById("video-pause-image") ? "#video-pause-image" :"http://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
+	    self.play_image_src = document.getElementById("video-play-image") ? "#video-play-image" : "https://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_10/v1471016296/play_wvmogo.png";
+	    self.pause_image_src = document.getElementById("video-pause-image") ? "#video-pause-image" :"https://res.cloudinary.com/dxbh0pppv/image/upload/c_scale,h_512,q_25/v1471016296/pause_ndega5.png";
 
 	    // Create icon image (play/pause), different image whether video is playing.
 
